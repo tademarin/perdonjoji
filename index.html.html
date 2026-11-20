@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hola Amorcito, ¿Me Perdonas? ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti para la celebración -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Quicksand para cuerpo suave y Pacifico para detalles románticos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-romantic {
+            font-family: 'Pacifico', cursive;
+        }
+
+        .font-title-arial {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.65rem;
+            line-height: 1.25;
+            color: #e11d48;
+        }
+
+        /* Animación continua de flores y pétalos flotando */
+        @keyframes floatFlower {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(45vh) translateX(18px) rotate(180deg);
+            }
+            85% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(105vh) translateX(-18px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .floating-flower {
+            position: fixed;
+            top: -50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatFlower linear infinite;
+        }
+
+        /* Animación suave de deditos índices tocándose */
+        @keyframes touchFingerLeft {
+            0%, 100% { transform: translateX(0px) rotate(-6deg); }
+            50% { transform: translateX(6px) rotate(0deg); }
+        }
+
+        @keyframes touchFingerRight {
+            0%, 100% { transform: translateX(0px) rotate(6deg); }
+            50% { transform: translateX(-6px) rotate(0deg); }
+        }
+
+        @keyframes sparklePop {
+            0%, 100% { opacity: 0.25; transform: scale(0.75); }
+            50% { opacity: 1; transform: scale(1.25); }
+        }
+
+        .finger-left {
+            display: inline-block;
+            animation: touchFingerLeft 1.35s infinite ease-in-out;
+        }
+
+        .finger-right {
+            display: inline-block;
+            animation: touchFingerRight 1.35s infinite ease-in-out;
+        }
+
+        .touch-sparkle {
+            display: inline-block;
+            animation: sparklePop 1.35s infinite ease-in-out;
+        }
+
+        /* Latido suave para el círculo del gatito */
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .animate-gentle-pulse {
+            animation: gentlePulse 2.5s infinite ease-in-out;
+        }
+
+        /* Entrada fluida de pantallas */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.94) translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .fade-in-card {
+            animation: fadeInScale 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Tarjeta principal con bordes de 28px y sombra delicada */
+        .main-card {
+            border-radius: 28px;
+            box-shadow: 0 18px 40px -10px rgba(225, 29, 72, 0.16), 0 4px 12px rgba(244, 63, 94, 0.08);
+        }
+
+        /* Cupones interactivos estilo ticket punteado */
+        .coupon-ticket {
+            border: 2px dashed #fda4af;
+            border-radius: 18px;
+            background: #fffafb;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .coupon-ticket:hover {
+            transform: translateY(-3px);
+            border-color: #e11d48;
+            background: #fff1f2;
+            box-shadow: 0 10px 20px -6px rgba(225, 29, 72, 0.2);
+        }
+
+        .coupon-ticket:active {
+            transform: scale(0.98);
+        }
+
+        .coupon-selected {
+            border: 2px solid #e11d48 !important;
+            background: #ffe4e6 !important;
+            box-shadow: 0 8px 20px -4px rgba(225, 29, 72, 0.28);
+        }
+
+        /* Transición suave para el botón escapista */
+        #btn-no {
+            transition: top 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        left 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        transform 0.2s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative select-none">
+
+    <!-- Contenedor de flores y pétalos flotando -->
+    <div id="flowers-container"></div>
+
+    <!-- PANTALLA 1: DISCULPA Y PREGUNTA -->
+    <main id="screen-apology" class="main-card relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border-2 border-pink-200/80 p-6 sm:p-8 text-center fade-in-card overflow-visible">
+        
+        <!-- Arreglo Floral Esquina Superior Izquierda -->
+        <svg class="w-20 h-20 absolute -top-5 -left-5 pointer-events-none z-20 drop-shadow-sm" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <path d="M55 28 C64 12, 82 12, 86 25 C75 34, 64 34, 55 28 Z" fill="#4ade80"/>
+            <g transform="translate(38, 36)">
+                <circle cx="0" cy="-12" r="10" fill="#fb7185"/>
+                <circle cx="11" cy="-4" r="10" fill="#f43f5e"/>
+                <circle cx="7" cy="10" r="10" fill="#fb7185"/>
+                <circle cx="-7" cy="10" r="10" fill="#f43f5e"/>
+                <circle cx="-11" cy="-4" r="10" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="7" fill="#fde047"/>
+            </g>
+            <g transform="translate(64, 22) scale(0.65)">
+                <circle cx="0" cy="-11" r="9" fill="#f9a8d4"/>
+                <circle cx="10" cy="-3" r="9" fill="#f472b6"/>
+                <circle cx="6" cy="9" r="9" fill="#f9a8d4"/>
+                <circle cx="-6" cy="9" r="9" fill="#f472b6"/>
+                <circle cx="-10" cy="-3" r="9" fill="#f9a8d4"/>
+                <circle cx="0" cy="0" r="6" fill="#fef08a"/>
+            </g>
+        </svg>
+
+        <!-- Arreglo Floral Esquina Superior Derecha -->
+        <svg class="w-20 h-20 absolute -top-5 -right-5 pointer-events-none z-20 drop-shadow-sm scale-x-[-1]" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <path d="M55 28 C64 12, 82 12, 86 25 C75 34, 64 34, 55 28 Z" fill="#4ade80"/>
+            <g transform="translate(38, 36)">
+                <circle cx="0" cy="-12" r="10" fill="#fb7185"/>
+                <circle cx="11" cy="-4" r="10" fill="#f43f5e"/>
+                <circle cx="7" cy="10" r="10" fill="#fb7185"/>
+                <circle cx="-7" cy="10" r="10" fill="#f43f5e"/>
+                <circle cx="-11" cy="-4" r="10" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="7" fill="#fde047"/>
+            </g>
+            <g transform="translate(64, 22) scale(0.65)">
+                <circle cx="0" cy="-11" r="9" fill="#f9a8d4"/>
+                <circle cx="10" cy="-3" r="9" fill="#f472b6"/>
+                <circle cx="6" cy="9" r="9" fill="#f9a8d4"/>
+                <circle cx="-6" cy="9" r="9" fill="#f472b6"/>
+                <circle cx="-10" cy="-3" r="9" fill="#f9a8d4"/>
+                <circle cx="0" cy="0" r="6" fill="#fef08a"/>
+            </g>
+        </svg>
+
+        <!-- Arreglo Floral Esquina Inferior Izquierda -->
+        <svg class="w-16 h-16 absolute -bottom-4 -left-4 pointer-events-none z-20 drop-shadow-sm -rotate-90" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#f472b6"/>
+                <circle cx="10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="6" cy="9" r="9" fill="#f472b6"/>
+                <circle cx="-6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-10" cy="-3" r="9" fill="#f472b6"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+
+        <!-- Arreglo Floral Esquina Inferior Derecha -->
+        <svg class="w-16 h-16 absolute -bottom-4 -right-4 pointer-events-none z-20 drop-shadow-sm rotate-180" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#f472b6"/>
+                <circle cx="10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="6" cy="9" r="9" fill="#f472b6"/>
+                <circle cx="-6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-10" cy="-3" r="9" fill="#f472b6"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+
+        <!-- Marco Circular (145px x 145px) con tu imagen directa y cápsula de deditos -->
+        <div class="relative flex flex-col items-center justify-center mb-4 animate-gentle-pulse">
+            <div style="width: 145px; height: 145px;" 
+                 class="rounded-full overflow-hidden border-4 border-pink-200 shadow-[0_8px_22px_rgba(225,29,72,0.22)] bg-pink-50 flex items-center justify-center">
+                <img src="https://i.postimg.cc/XYNRzqTs/images.jpg" 
+                     alt="Gatito triste envuelto en mantita" 
+                     style="width: 100%; height: 100%; object-fit: cover; object-position: center 20%;"
+                     onerror="this.src='https://placehold.co/145x145/ffe4e6/e11d48?text=%F0%9F%98%BF'">
+            </div>
+
+            <!-- Cápsula blanca en el borde inferior con los deditos índices tocándose -->
+            <div class="flex items-center justify-center -mt-4 bg-white px-4 py-1 rounded-full shadow-md border border-pink-200 z-10">
+                <span class="finger-left text-xl sm:text-2xl">👉</span>
+                <span class="touch-sparkle text-xs text-rose-500 mx-0.5">✨</span>
+                <span class="finger-right text-xl sm:text-2xl">👈</span>
+            </div>
+        </div>
+
+        <!-- Título principal en fuente limpia y negrita tipo Arial -->
+        <h1 class="font-title-arial font-bold mb-3.5 tracking-tight">
+            Hola Amorcito, ¿Me Perdonas?
+        </h1>
+
+        <!-- Recuadro de disculpa -->
+        <div style="background-color: #fff5f7;" class="border border-pink-200/90 rounded-2xl py-3.5 px-4 mb-6 shadow-xs">
+            <p class="text-rose-700 font-semibold text-sm sm:text-base leading-relaxed">
+                Tenes 100% de Razón, hablé de más y me metí donde no tenía que...
+            </p>
+        </div>
+
+        <!-- Contenedor de botones -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 min-h-[105px] relative">
+            <!-- Botón SÍ -->
+            <button id="btn-yes" onclick="acceptApology()" 
+                style="background: linear-gradient(135deg, #ff4d6d 0%, #e11d48 100%);"
+                class="w-full sm:w-auto px-7 py-3.5 text-white font-bold rounded-2xl shadow-lg shadow-rose-300/60 transform transition-all duration-300 text-base sm:text-lg flex items-center justify-center gap-2 z-20 cursor-pointer hover:brightness-105 active:scale-95">
+                <span>SÍ, te perdono ❤️</span>
+            </button>
+
+            <!-- Botón NO (Escapista) -->
+            <button id="btn-no" 
+                class="w-full sm:w-auto px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-2xl shadow-md border border-gray-200 text-base flex items-center justify-center gap-1.5 z-50 cursor-pointer whitespace-nowrap">
+                <span id="btn-no-text">NO 🥹</span>
+            </button>
+        </div>
+
+        <p id="hint-text" class="text-xs text-rose-400 font-medium mt-3 italic h-4 transition-opacity duration-300"></p>
+    </main>
+
+    <!-- PANTALLA 2: CELEBRACIÓN Y CUPONES -->
+    <section id="screen-rewards" class="hidden main-card relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border-2 border-pink-200/80 p-6 sm:p-7 text-center fade-in-card overflow-visible">
+        
+        <!-- Arreglos florales superiores en pantalla de celebración -->
+        <svg class="w-16 h-16 absolute -top-4 -left-4 pointer-events-none z-20 drop-shadow-sm" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#fb7185"/>
+                <circle cx="10" cy="-3" r="9" fill="#f43f5e"/>
+                <circle cx="6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-6" cy="9" r="9" fill="#f43f5e"/>
+                <circle cx="-10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+        <svg class="w-16 h-16 absolute -top-4 -right-4 pointer-events-none z-20 drop-shadow-sm scale-x-[-1]" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#fb7185"/>
+                <circle cx="10" cy="-3" r="9" fill="#f43f5e"/>
+                <circle cx="6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-6" cy="9" r="9" fill="#f43f5e"/>
+                <circle cx="-10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+
+        <div class="inline-block px-4 py-1 bg-rose-100 text-rose-600 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            ¡Perdón aceptado! 🌸✨
+        </div>
+
+        <h2 class="font-title-arial font-bold mb-2">
+            ¡Sabía que me ibas a perdonar! 🥰💖
+        </h2>
+        
+        <p class="text-gray-600 text-sm font-medium mb-5">
+            Elige tu cupón de disculpa oficial (válido cuando tú digas):
+        </p>
+
+        <!-- Lista de 3 Cupones -->
+        <div class="space-y-3 text-left mb-5">
+            
+            <!-- Cupón 1 -->
+            <div id="coupon-1" onclick="selectCoupon(1, 'Un Almuerzo 🍝', 'Donde tú elijas, yo invito todo.')" 
+                 class="coupon-ticket p-4 cursor-pointer flex items-center gap-3.5 group">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
+                    🍝
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-600 transition-colors">Un Almuerzo 🍝</h3>
+                        <span class="text-[10px] font-bold uppercase bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">Vale #1</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-0.5">Donde tú elijas, yo invito todo.</p>
+                </div>
+            </div>
+
+            <!-- Cupón 2 -->
+            <div id="coupon-2" onclick="selectCoupon(2, 'Una Cena 🍷', 'Noche especial a tu gusto.')" 
+                 class="coupon-ticket p-4 cursor-pointer flex items-center gap-3.5 group">
+                <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
+                    🍷
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-600 transition-colors">Una Cena 🍷</h3>
+                        <span class="text-[10px] font-bold uppercase bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full shrink-0">Vale #2</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-0.5">Noche especial a tu gusto.</p>
+                </div>
+            </div>
+
+            <!-- Cupón 3 -->
+            <div id="coupon-3" onclick="selectCoupon(3, 'Una Salida \'Sorpresa\' ✨', 'Tú solo ponte linda, yo organizo todo (consultando tus horarios esta vez 😅).')" 
+                 class="coupon-ticket p-4 cursor-pointer flex items-center gap-3.5 group">
+                <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
+                    ✨
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-600 transition-colors">Una Salida 'Sorpresa' ✨</h3>
+                        <span class="text-[10px] font-bold uppercase bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full shrink-0">Vale #3</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-0.5">Tú solo ponte linda, yo organizo todo (consultando tus horarios esta vez 😅).</p>
+                </div>
+            </div>
+
+        </div>
+
+        <p id="select-prompt" class="text-xs text-rose-400 font-medium">Toca uno de los 3 cupones para activar tu comprobante 👆🌸</p>
+    </section>
+
+    <!-- PANTALLA 3: COMPROBANTE FINAL CON GIF DEL GATITO BESANDO LA CÁMARA -->
+    <section id="screen-final" class="hidden main-card relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border-2 border-pink-200/80 p-6 sm:p-7 text-center fade-in-card overflow-visible">
+        
+        <!-- Arreglos florales superiores -->
+        <svg class="w-16 h-16 absolute -top-4 -left-4 pointer-events-none z-20 drop-shadow-sm" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#fb7185"/>
+                <circle cx="10" cy="-3" r="9" fill="#f43f5e"/>
+                <circle cx="6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-6" cy="9" r="9" fill="#f43f5e"/>
+                <circle cx="-10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+        <svg class="w-16 h-16 absolute -top-4 -right-4 pointer-events-none z-20 drop-shadow-sm scale-x-[-1]" viewBox="0 0 100 100" fill="none">
+            <path d="M28 65 C12 56, 8 38, 22 30 C30 38, 34 52, 28 65 Z" fill="#86efac"/>
+            <g transform="translate(38, 38)">
+                <circle cx="0" cy="-11" r="9" fill="#fb7185"/>
+                <circle cx="10" cy="-3" r="9" fill="#f43f5e"/>
+                <circle cx="6" cy="9" r="9" fill="#fb7185"/>
+                <circle cx="-6" cy="9" r="9" fill="#f43f5e"/>
+                <circle cx="-10" cy="-3" r="9" fill="#fb7185"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+
+        <div class="inline-block px-4 py-1 bg-rose-100 text-rose-600 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+            ¡Trato hecho, amorcito! 😘💖
+        </div>
+
+        <!-- Contenedor del GIF de Tenor (Gatito besando la cámara) -->
+        <div class="w-44 h-44 sm:w-48 sm:h-48 mx-auto mb-4 rounded-3xl overflow-hidden border-4 border-pink-200 shadow-[0_8px_22px_rgba(225,29,72,0.22)] bg-pink-50 flex items-center justify-center relative">
+            <div class="tenor-gif-embed w-full h-full" data-postid="21080827" data-share-method="host" data-aspect-ratio="1" data-width="100%">
+                <a href="https://tenor.com/view/gato-besando-a-la-camara-gif-21080827">Gato Besando A La Camara GIF</a>
+            </div>
+        </div>
+
+        <!-- Comprobante Oficial -->
+        <div id="voucher-box" class="bg-gradient-to-br from-rose-50 via-pink-50 to-white border-2 border-dashed border-rose-400 rounded-2xl p-4 text-center mb-4">
+            <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-rose-500 mb-1.5">
+                <span>🎟️ Comprobante Oficial</span>
+                <span id="voucher-code" class="bg-white px-2 py-0.5 rounded-md border border-pink-200 text-gray-700">CÓDIGO: #AMOR-2026</span>
+            </div>
+            
+            <div id="chosen-title" class="text-lg font-bold text-gray-800 mb-0.5">Un Almuerzo 🍝</div>
+            <p id="chosen-desc" class="text-xs text-gray-600 mb-3.5">Donde tú elijas, yo invito todo.</p>
+
+            <!-- Botón de WhatsApp -->
+            <a id="whatsapp-link" href="#" target="_blank" rel="noopener noreferrer"
+               class="w-full py-3.5 px-5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl shadow-md shadow-green-200 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform active:scale-95">
+                <span>Confirmar por WhatsApp 💬</span>
+            </a>
+        </div>
+
+        <button onclick="backToCoupons()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold underline cursor-pointer">
+            ← Cambiar de cupón
+        </button>
+    </section>
+
+    <script async src="https://tenor.com/embed.js"></script>
+    <script>
+        // --- 1. FLORES Y PÉTALOS FLOTANTES CONTINUOS ---
+        function createFloatingFlowers() {
+            const container = document.getElementById('flowers-container');
+            const flowers = ['🌸', '🌺', '🌷', '💮', '🏵️'];
+            const count = 24;
+
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'floating-flower';
+                el.innerText = flowers[Math.floor(Math.random() * flowers.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = (Math.random() * 14 + 15) + 'px';
+                el.style.animationDuration = (Math.random() * 8 + 7) + 's';
+                el.style.animationDelay = (Math.random() * 6) + 's';
+                container.appendChild(el);
+            }
+        }
+
+        // --- 2. BOTÓN ESCAPISTA ("NO") Y CRECIMIENTO DEL ("SÍ") ---
+        const btnNo = document.getElementById('btn-no');
+        const btnNoText = document.getElementById('btn-no-text');
+        const btnYes = document.getElementById('btn-yes');
+        const hintText = document.getElementById('hint-text');
+
+        const funnyPhrases = [
+            "¿Segura? 🥺",
+            "Piénsalo bien 😭",
+            "¡Error 404! 🙈",
+            "Ese botón no sirve 💔",
+            "¡Dale al SÍ! 👉👈",
+            "Me duele el cora 😿"
+        ];
+
+        let dodgeCount = 0;
+        let yesScale = 1;
+
+        function moveNoButton(e) {
+            if (e) e.preventDefault();
+
+            // Desprender al body para que position: fixed sea 100% relativo al viewport real
+            if (btnNo.parentElement !== document.body) {
+                document.body.appendChild(btnNo);
+            }
+
+            btnNo.style.position = 'fixed';
+            btnNo.style.width = 'auto';
+            btnNo.style.zIndex = '9999';
+
+            // Cambiar frase antes de calcular dimensiones para evitar desbordes
+            btnNoText.innerText = funnyPhrases[dodgeCount % funnyPhrases.length];
+            dodgeCount++;
+
+            // Margen mínimo de seguridad de 20px en todos los bordes
+            const margin = 20;
+            const btnWidth = btnNo.offsetWidth || 165;
+            const btnHeight = btnNo.offsetHeight || 50;
+
+            const maxX = Math.max(margin, window.innerWidth - btnWidth - margin);
+            const maxY = Math.max(margin, window.innerHeight - btnHeight - margin);
+
+            const randomX = Math.floor(Math.random() * (maxX - margin + 1)) + margin;
+            const randomY = Math.floor(Math.random() * (maxY - margin + 1)) + margin;
+
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+
+            // Hacer crecer ligeramente el botón "SÍ" en cada intento
+            if (yesScale < 1.38) {
+                yesScale += 0.065;
+                btnYes.style.transform = `scale(${yesScale})`;
+            }
+
+            if (dodgeCount === 2) {
+                hintText.innerText = "Ese botón está deshabilitado por exceso de ternura 🙈🌸";
+            }
+        }
+
+        btnNo.addEventListener('mouseover', moveNoButton);
+        btnNo.addEventListener('touchstart', moveNoButton, { passive: false });
+        btnNo.addEventListener('click', moveNoButton);
+
+        // --- 3. CELEBRACIÓN AL PRESIONAR "SÍ, te perdono ❤️" ---
+        function acceptApology() {
+            // Ocultar botón NO si estaba flotando
+            btnNo.style.display = 'none';
+
+            // Lluvia festiva de confeti y corazones
+            fireConfetti();
+
+            // Cambiar de pantalla
+            document.getElementById('screen-apology').classList.add('hidden');
+            document.getElementById('screen-rewards').classList.remove('hidden');
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff4d6d', '#e11d48', '#fb7185', '#f472b6', '#fda4af'];
+            
+            confetti({
+                particleCount: 85,
+                spread: 75,
+                origin: { y: 0.6 },
+                colors: colors
+            });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 45,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 45,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+            }, 220);
+        }
+
+        // --- 4. SELECCIÓN DE CUPÓN Y COMPROBANTE CON WHATSAPP ---
+        function selectCoupon(id, title, description) {
+            // Marcar visualmente el cupón elegido
+            for (let i = 1; i <= 3; i++) {
+                const card = document.getElementById(`coupon-${i}`);
+                if (i === id) {
+                    card.classList.add('coupon-selected');
+                } else {
+                    card.classList.remove('coupon-selected');
+                }
+            }
+
+            // Generar código único divertido
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const code = `#PERDON-${randomNum}`;
+
+            // Rellenar comprobante
+            document.getElementById('voucher-code').innerText = `CÓDIGO: ${code}`;
+            document.getElementById('chosen-title').innerText = title;
+            document.getElementById('chosen-desc').innerText = description;
+
+            // Construir mensaje prellenado para WhatsApp
+            const waText = `¡Hola amorcito! ❤️ Te perdono 🥰💖\n\nYa activé mi cupón oficial:\n🎟️ *${title}*\n🔑 Código: *${code}*\n\n¡Avísame y coordinamos bien mis horarios! 🌸✨`;
+            document.getElementById('whatsapp-link').href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+            // Pasar a la pantalla final con el GIF del gatito besando la cámara
+            document.getElementById('screen-rewards').classList.add('hidden');
+            document.getElementById('screen-final').classList.remove('hidden');
+
+            // Mini confeti al seleccionar cupón
+            confetti({
+                particleCount: 55,
+                spread: 70,
+                origin: { y: 0.7 },
+                colors: ['#ff4d6d', '#e11d48', '#fda4af']
+            });
+        }
+
+        function backToCoupons() {
+            document.getElementById('screen-final').classList.add('hidden');
+            document.getElementById('screen-rewards').classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            createFloatingFlowers();
+        };
+    </script>
+</body>
+</html>
